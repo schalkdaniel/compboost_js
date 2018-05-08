@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <style>
+        body { 
+        	font: 12px Century Gothic;
+        	background-color: rgb(50, 50, 50);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Create two equal columns that floats next to each other */
+        .column {
+            float: left;
+            width: 50%;
+            padding: 10px;
+            height: 700px; /* Should be removed. Only for demonstration */
+        }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
+
+    <head>
+        <meta charset="UTF-8">
+        <title>D3 test HTML</title>
+        <script src="http://d3js.org/d3.v4.min.js"></script>
+        <script src="hexagon.js" ></script>
+    </head>
+
+    <body>
+        <div class="row">
+            <div class="column" id="hexagonDiv">
+            </div>
+            <div class="column" style="background-color:aquamarine">
+            </div>
+        </div>
+
+        <script>
+
+            var hexagon_numbers = 40;
+            var col_numbers = 7;
+
+            var row_numbers = Math.trunc(hexagon_numbers / col_numbers) + 1;
+
+            var x_anchor = 40;
+            var y_anchor = 40;
+
+            // ----------------------------------------------------------------------------- //
+            //                         Create Hexagon Visualization                          //
+            // ----------------------------------------------------------------------------- //
+
+            var div_width  = document.getElementById("hexagonDiv").clientWidth;
+            var div_height = document.getElementById("hexagonDiv").clientHeight;
+
+            var red_from = 72;
+            var blue_from = 209;
+            var green_from = 204;
+
+            var red_to = 205;
+            var blue_to = 133;
+            var green_to = 0;
+                      
+            // console.log(divWidth);
+            // console.log(divHeight);
+
+            // Get appropriate centers and radi:
+            var outer_radius = div_width / (2 * col_numbers) * (1 - 1 / col_numbers);
+            var inner_radius = outer_radius * (0.8);
+            var hexagon_centers = [];
+
+            var k = 0;
+
+            for (var i = 0; i < row_numbers; i++) {
+                for (var j = 0; j < col_numbers; j++) {
+                    if (k === hexagon_numbers) { break; }
+                    
+                    hexagon_centers.push( { 
+                        "x": x_anchor + (1 + j * 2) * outer_radius, 
+                        "y": y_anchor + (1 + i * 2) * outer_radius,
+                        "fill": "rgba(" + 
+                            Math.trunc(red_from + (red_to - red_from) / hexagon_numbers * (k + 1)) + "," + 
+                            Math.trunc(blue_from + (blue_to - blue_from) / hexagon_numbers * (k + 1)) + "," + 
+                            Math.trunc(green_from + (green_to - green_from) / hexagon_numbers * (k + 1)) + ",",
+                        "radius": inner_radius - 0.5 * k / hexagon_numbers * inner_radius
+                    } );
+
+                    k = k + 1;
+                }
+            }
+            console.log(hexagon_centers);
+
+            var svg = d3
+                .select("#hexagonDiv")
+                .append("svg")
+                .attr("width", div_width)
+                .attr("height", div_height);
+
+            // Append header for the hexagons:
+            svg.append("text")
+                .text("Selected Base-Learner:")
+                .attr("x", x_anchor)
+                .attr("y", y_anchor)
+                .style("fill", "white")
+                .style("font-family", "Century Gothic")
+                .style("font-size", "36px")
+                .style("text-anchor", "start");
+
+            // Append first hexagon:
+            for (i = 0; i < hexagon_numbers; i++) { 
+
+                hexagon (
+                    svg    = svg,
+                    fill   = hexagon_centers[i]["fill"] + "0.7)", 
+                    stroke = "black", 
+                    x      = hexagon_centers[i]["x"], 
+                    y      = hexagon_centers[i]["y"], 
+                    r      = hexagon_centers[i]["radius"], 
+                    fill_hover   = hexagon_centers[i]["fill"] + "1)", 
+                    stroke_hover = "black", 
+                    x_init       = 0,
+                    y_init       = 0,
+                    transition_duration = 1000,
+                    hover_info = "my fancy hexagons",
+                    delay = 70 * i
+                );
+            }
+        </script>
+    </body>
+</html>
