@@ -87,6 +87,14 @@ function hexagon (svg, fill, stroke, x, y, r, fill_hover, stroke_hover, x_init, 
                 .attr("stroke", stroke);
 
             tooltip.style("visibility", "hidden");
+        })
+        .on("click", function() {
+            var element = document.createElement("div");
+                element.innerHTML = '<div id="overlay"><button onclick="removeEffectWindow()">Hide Effect</button></div>';
+                element.style.position = "absolute";
+                element.style.left = x + 'px';
+                element.style.top = y + 'px';
+                document.getElementById('mainPanel').appendChild(element);
         });
 
     hexagon
