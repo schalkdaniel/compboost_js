@@ -2,6 +2,11 @@
 <html lang="en">
 
     <style>
+        h1 {
+            font-size: 40px;
+            color: white;
+            margin-left: 40px;
+        }
         body { 
         	font: 12px Century Gothic;
         	background-color: rgb(50, 50, 50);
@@ -47,6 +52,58 @@
             display: table;
             clear: both;
         }
+
+        /* Styling of the risk path */
+        .inbag_line {
+          fill: none;
+          stroke: rgb(72, 209, 204);
+          stroke-width: 3px;
+        }
+
+        .inbag_area {
+          fill: rgba(72, 209, 204, 0.2);
+        }
+        .oob_line {
+          fill: none;
+          stroke: rgb(255, 180, 50);
+          stroke-width: 3px;
+        }
+        .oob_area {
+          fill: rgba(255, 180, 50, 0.2);
+        }
+
+        .axisWhite line {
+            fill: none;
+            stroke: rgb(170, 170, 170);
+            stroke-width: 2;
+            shape-rendering: crispEdges;
+        }
+
+        .axisWhite path {
+            fill: none;
+            stroke: rgb(170, 170, 170);
+            stroke-width: 2;
+            shape-rendering: crispEdges;
+        }
+
+        .axisWhite text {
+            color: white;
+            fill: rgb(170, 170, 170);
+            font-size: 18px;
+            stroke: none;
+            stroke-width: 1;
+            shape-rendering: crispEdges;
+        }
+
+        .grid line {
+        	stroke: rgba(255, 255, 255, 0.2);
+        	shape-rendering: crispEdges;
+        }
+
+        .grid path {
+        	fill: none;
+        	stroke: none;
+        }
     </style>
 
     <head>
@@ -54,13 +111,15 @@
         <title>D3 test HTML</title>
         <script src="http://d3js.org/d3.v4.min.js"></script>
         <script src="hexagon.js" ></script>
+        <script src="line_graph.js" ></script>
     </head>
 
     <body>
+        <h1>Visualize a Compboost Object</h1>
         <div class="row" id="mainPanel">
             <div class="column" id="hexagonDiv">
             </div>
-            <div class="column" style="background-color:aquamarine">
+            <div class="column" id="riskDiv">
             </div>
         </div>
 
@@ -82,7 +141,7 @@
 
 
 
-            var hexagon_numbers = 40;
+            var hexagon_numbers = 56;
             var col_numbers = 7;
 
             var row_numbers = Math.trunc(hexagon_numbers / col_numbers) + 1;
@@ -124,7 +183,7 @@
                     
                     hexagon_centers.push( { 
                         "x": x_anchor + (1 + j * 2) * outer_radius, 
-                        "y": y_anchor + (1 + i * 2) * inner_radius + inner_radius / 2 * (j % 2),
+                        "y": 40 + y_anchor + (1 + i * 2) * inner_radius + inner_radius / 2 * (j % 2),
                         "fill": "rgba(" + 
                             Math.trunc(red_from + (red_to - red_from) / hexagon_numbers * (k + 1)) + "," + 
                             Math.trunc(blue_from + (blue_to - blue_from) / hexagon_numbers * (k + 1)) + "," + 
@@ -192,8 +251,30 @@
             //                                Create Line Graph                              //
             // ----------------------------------------------------------------------------- //
 
+            var div_width  = document.getElementById("riskDiv").clientWidth;
+            var div_height = document.getElementById("riskDiv").clientHeight;
 
+            var svg = d3
+                .select("#riskDiv")
+                .append("svg")
+                .attr("width", div_width)
+                .attr("height", div_height)
+                .append("g")
+                .attr("transform",
+    	            "translate(" + x_anchor + "," + y_anchor + ")");
 
+            svg.append("text")
+                .text("Inbag vs. Out of Bag Risk:")
+                .attr("x", -x_anchor) // Controled within the translate above
+                .attr("y", 0) // Controled within the translate above
+                .style("fill", "white")
+                .style("font-family", "Century Gothic")
+                .style("font-size", "36px")
+                .style("text-anchor", "start");
+
+           
+
+            riskLine(svg, file = "../plot_data/risk_data.csv", y_offset = 40);
 
         </script>
     </body>

@@ -89,6 +89,14 @@ function hexagon (svg, fill, stroke, x, y, r, fill_hover, stroke_hover, x_init, 
             tooltip.style("visibility", "hidden");
         })
         .on("click", function() {
+            if (document.getElementById("overlay")) {
+                var element = document.getElementById("overlay")
+                element.outerHTML = "";
+                element.innerHTML = "";
+
+                delete element;
+            }            
+
             var element = document.createElement("div");
                 element.innerHTML = '<div id="overlay"><button onclick="removeEffectWindow()">Hide Effect</button></div>';
                 element.style.position = "absolute";
@@ -101,5 +109,6 @@ function hexagon (svg, fill, stroke, x, y, r, fill_hover, stroke_hover, x_init, 
         .transition()
         .duration(transition_duration)
         .attr("d", lineFunction(hexagonData(x, y, r))).delay(delay);
+
     return hexagon;
 }
