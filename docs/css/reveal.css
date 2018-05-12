@@ -6,6 +6,18 @@
  * Copyright (C) 2017 Hakim El Hattab, http://hakim.se
  */
 /*********************************************
+ * CUSTOM STYLES
+ *********************************************/
+
+#content {
+  color:rgb(255, 248, 220);
+}
+
+#content:hover {
+  color:rgb(209, 107, 50);
+}
+
+/*********************************************
  * RESET STYLES
  *********************************************/
 html, body, .reveal div, .reveal span, .reveal applet, .reveal object, .reveal iframe,
@@ -450,14 +462,14 @@ body {
 .reveal .slide-number {
   position: fixed;
   display: block;
-  right: 8px;
+  left: 8px;
   bottom: 8px;
   z-index: 31;
   font-family: Helvetica, sans-serif;
-  font-size: 12px;
+  font-size: 18px;
   line-height: 1;
-  color: #fff;
-  background-color: rgba(0, 0, 0, 0.4);
+  color: rgb(209, 107, 50);
+  background-color: transparent;
   padding: 5px; }
 
 .reveal .slide-number-delimiter {
