@@ -2,9 +2,11 @@
 //                              LINE GRAPHS                                   //
 // -------------------------------------------------------------------------- //
 
-function riskLine (svg, file, y_offset)
+function riskLine (svg, file_path, y_offset, hexagon_centers_init, svg_hexagons)
 {
-    var width  = document.getElementById("riskDiv").clientWidth * 0.9;
+		var hexagon_centers_old = hexagon_centers_init;
+
+    var width  = document.getElementById("riskDiv").clientWidth * 0.8;
     var height = document.getElementById("riskDiv").clientHeight * 0.9 - y_offset;
 
     // set the ranges
@@ -21,7 +23,9 @@ function riskLine (svg, file, y_offset)
       .y(function(d) { return y(d.oob); });
 
     // Get the data
-    d3.csv(file, function (error, data) {
+    d3.csv(file_path + "/risk_data.csv", function (error, data) {
+
+			var hex_state_old;
 
     	if (error) throw error;
 
@@ -95,6 +99,27 @@ function riskLine (svg, file, y_offset)
     	  .attr("class", "axisWhite")
     	  .call(d3.axisLeft(y)
 					.ticks(4));
+
+			  // text label for the x axis
+  			svg.append("text")             
+  			    .attr("transform",
+  			          "translate(" + (width/2) + " ," + 
+  			                         (height + 40) + ")")
+  			    .style("text-anchor", "middle")
+  			    .text("Iteration")
+						.style("fill", "white")
+						.style("font-size", "18px");
+										
+  			// text label for the y axis
+  			svg.append("text")
+  			    .attr("transform", "rotate(-90)")
+  			    .attr("y", 0 - 70)
+  			    .attr("x",0 - (height / 2))
+  			    .attr("dy", "1em")
+  			    .style("text-anchor", "middle")
+  			    .text("Inbag and out of bag risk")
+						.style("fill", "white")
+						.style("font-size", "18px"); 
 
 			var input = 20;
 
@@ -179,11 +204,14 @@ function riskLine (svg, file, y_offset)
 							var trueVar = Math.trunc(myVar / width *  (trueMax - 1) + 1);
 							
 							drawArea(myVar); 
+							
 							/*
 							console.log(myVar);
 							console.log(maxIdx);
 							console.log(width);
 							*/
+							// var bl = hexCenters(row_numbers = 8, blearner = blearner);
+
 							svg.append("text")
 								.text(trueVar)
 								.attr("id", "mytext")
@@ -203,14 +231,9 @@ function riskLine (svg, file, y_offset)
 
 							var trueVar = Math.trunc(myVar / width *  (trueMax - 1) + 1);
 
-							svg.append("text")
-								.text(trueVar)
-								.attr("id", "mytext")
-								.attr("x", width)
-								.attr("y", y_offset - 4)
-								.attr("fill", "white")
-								.attr("font-size", "22px")
-								.style("text-anchor", "middle");
+							svg_hexagons.selectAll("#myhexs").remove();
+
+							hexagon_centers_old = hexCenters(svg_hexagons, blearner, trueVar, hexagon_centers_old);
 
 							d3.select(this).classed("active", false); 
 						}));

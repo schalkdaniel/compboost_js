@@ -20,6 +20,34 @@
 		<!-- Theme used for syntax highlighting of code -->
 		<link rel="stylesheet" href="lib/css/zenburn.css">
 
+		<style>
+			* {box-sizing: border-box;}
+			.img-magnifier-container {
+			  	position: relative;
+			  	text-align: center;
+			}
+			.img-magnifier-glass {
+			  	position: absolute;
+			  	border: none;
+			  	border-radius: 10px;
+			  	cursor: none;
+			  	background-color: rgba(0, 0, 0, 0.8);
+			  	/*Set the size of the magnifier glass:*/
+			  	width: 400px;
+			  	height: 400px;
+			}
+			.nocursor {
+			  	border-radius: 50%;
+			  	position: absolute;
+			  	border: none;
+			  	width: 0px;
+			  	height: 0px;
+			}
+			.li {
+				padding-left: 100px !important;
+			}
+	    </style>
+
 		<!-- Printing and PDF exports -->
 		<script>
 			var link = document.createElement( 'link' );
@@ -27,7 +55,83 @@
 			link.type = 'text/css';
 			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
 			document.getElementsByTagName( 'head' )[0].appendChild( link );
-		</script>
+
+			function magnify(imgID, zoom) {
+			  	var img, glass, w, h, bw;
+			  	img = document.getElementById(imgID);
+		  
+				/*create magnifier glass:*/
+			  	glass = document.createElement("DIV");
+			  	glass.setAttribute("class", "img-magnifier-glass");
+		  
+				/*insert magnifier glass:*/
+			  	img.parentElement.insertBefore(glass, img);
+		  
+				/*set background properties for the magnifier glass:*/
+			  	glass.style.backgroundImage = "url('" + img.src + "')";
+			  	glass.style.backgroundRepeat = "no-repeat";
+			  	glass.style.backgroundSize = (img.width * zoom) + "px " + (img.height * zoom) + "px";
+			  	bw = 3;
+			  	w = glass.offsetWidth / 2;
+			  	h = glass.offsetHeight / 2;
+		  
+				/*execute a function when someone moves the magnifier glass over the image:*/
+			  	glass.addEventListener("mousemove", moveMagnifier);
+			  	img.addEventListener("mousemove", moveMagnifier);
+		  
+				/*and also for touch screens:*/
+			  	glass.addEventListener("touchmove", moveMagnifier);
+			  	img.addEventListener("touchmove", moveMagnifier);
+
+				/* remove magnifier when the curser isn't over the image: */
+  				glass.addEventListener("mouseout", removeLoupe);
+  				img.addEventListener("mouseout", removeLoupe);
+
+			  	function moveMagnifier(e) {
+
+					glass.setAttribute("class", "img-magnifier-glass");
+
+			  	  	var pos, x, y;
+			  	  	/*prevent any other actions that may occur when moving over the image*/
+			  	  	e.preventDefault();
+			  	  	/*get the cursor's x and y positions:*/
+			  	  	pos = getCursorPos(e);
+			  	  	x = pos.x;
+			  	  	y = pos.y;
+			  	  	/*prevent the magnifier glass from being positioned outside the image:*/
+			  	  	if (x > img.width - (w / zoom)) {x = img.width - (w / zoom);}
+			  	  	if (x < w / zoom) {x = w / zoom;}
+			  	  	if (y > img.height - (h / zoom)) {y = img.height - (h / zoom);}
+			  	  	if (y < h / zoom) {y = h / zoom;}
+
+					var offset = 200;
+
+			  	  	/*set the position of the magnifier glass:*/
+			  	  	glass.style.left = (x - w - offset) + "px";
+			  	  	glass.style.top = (y - h - offset) + "px";
+			  	  	/*display what the magnifier glass "sees":*/
+			  	  	glass.style.backgroundPosition = "-" + ((x * zoom) - w - offset + bw) + "px -" + ((y * zoom) - h - offset + bw) + "px";
+			  	}
+		  
+				function getCursorPos(e) {
+			  	  	var a, x = 0, y = 0;
+			  	  	e = e || window.event;
+			  	  	/*get the x and y positions of the image:*/
+			  	  	a = img.getBoundingClientRect();
+			  	  	/*calculate the cursor's x and y coordinates, relative to the image:*/
+			  	  	x = e.pageX - a.left;
+			  	  	y = e.pageY - a.top;
+			  	  	/*consider any page scrolling:*/
+			  	  	x = x - window.pageXOffset;
+			  	  	y = y - window.pageYOffset;
+			  	  	return {x : x, y : y};
+				}
+
+			  	function removeLoupe (e) {
+  					glass.setAttribute("class", "nocursor");
+  				}
+			}
+			</script>
 
 		<!--[if lt IE 9]>
 		<script src="lib/js/html5shiv.js"></script>
@@ -60,12 +164,13 @@
 					</p>
 				</section>
 				<section data-background="figures/background/cboost.png">
-					<h3>Content</h2>
+					<h3>Content</h3>
 					<ol style="width:90%;">
-						<li><a href="#/2" class="contents" id="content">About Compboost</a></li>
-						<li><a href="#/3" class="contents" id="content">Class System of Compboost</a></li>
-						<li><a href="#/4" class="contents" id="content">Small Benchmark: <code>compboost</code> vs <code>mboost</code></a></li>
-						<li><a href="#/5" class="contents" id="content">Next Steps</a></li>
+						<li style="padding-left:10px;padding-bottom:10px;"><a href="#/2" class="contents" id="content">About Compboost</a></li>
+						<li style="padding-left:10px;padding-bottom:10px;"><a href="#/3" class="contents" id="content">Class System of Compboost</a></li>
+						<li style="padding-left:10px;padding-bottom:10px;"><a href="#/4" class="contents" id="content">Extending <code>compboost</code></a></li>
+						<li style="padding-left:10px;padding-bottom:10px;"><a href="#/5" class="contents" id="content">Small Benchmark: <code>compboost</code> vs <code>mboost</code></a></li>
+						<li style="padding-left:10px;padding-bottom:10px;"><a href="#/6" class="contents" id="content">Next Steps</a></li>
 					</ol>
 								
 				</section>
@@ -81,21 +186,23 @@
 					<section data-background="figures/background/cboost.png">
 						<h2>About Compboost</h2>
 					</section>
-					
+				
 					<section>
-						<!-- 
-						<h2>Basement Level 1</h2>
-						<p>Nested slides are useful for adding additional detail underneath a high level horizontal slide.</p>
-						-->
-						<iframe src="../js/index.html" width="100%" height="600px"></iframe>
+						<h3 style="text-transform:none;">About <code>compboost</code></h3>
+						<ul>
+							<li style="padding-left:10px;padding-bottom:10px;">Component-wise/model-based boosting algorithm written in <code>C++</code></li>
+							<li style="padding-left:10px;padding-bottom:10px;">Accessible through <code>R</code> by exposing the important classes</li>
+							<li style="padding-left:10px;padding-bottom:10px;"><a href="https://schalkdaniel.github.io/compboost/cpp_man/html/index.html"><code>C++</code> documentation</a> generated by <code>doxygen</code></li>
+							<li style="padding-left:10px;padding-bottom:10px;">
+								Unit tested <a href="https://travis-ci.org/schalkdaniel/compboost"><img style="border:none;margin:4px;" src="https://api.travis-ci.org/schalkdaniel/compboost.svg?branch=master" ,="" alt="Build Status"></a> 
+							    and code coverage <a href="https://coveralls.io/github/schalkdaniel/compboost?branch=master"><img style="border:none;margin:4px;" src="https://coveralls.io/repos/github/schalkdaniel/compboost/badge.svg?branch=master" ,="" alt="Coverage Status"></a>
+							</li>
+						</ul>
 					</section>
-					
 
-					<!-- Technology of compboost: -->
 					<section>
-						<!--
-						<h2>Image Fragments</h2>
-						-->
+
+						<h3 style="text-transform:none;">Infrastructure of <code>compboost</code></h3>
 						<div style="position:relative; width:600px; height:400px; margin: auto;">
 							<img class="fragment" src="figures/cboost_struct/frame1.png" style="width:100%;height:auto;position:absolute;top:0;left:0;transition: all 1s ease;background-color:transparent;border:none;box-shadow:none;" />
 							<img class="fragment" src="figures/cboost_struct/frame2.png" style="width:100%;height:auto;position:absolute;top:0;left:0;transition: all 1s ease;background-color:transparent;border:none;box-shadow:none;" />
@@ -109,9 +216,28 @@
 					<!-- Details -->
 					<section>
 						<h3 style="text-transform:none;">C++ and Rcpp</h3>
-						<p>
-							bla bla bla
-						</p>
+						<ul>
+							<li style="padding-left:10px;padding-bottom:10px;">Expensive algorithms are written in <code>C++</code></li>
+							<li style="padding-left:10px;padding-bottom:10px;">Exporting <code>C++</code> to <code>R</code> using <code>Rcpp</code></li>
+							<li style="padding-left:10px;padding-bottom:10px;">Using <code>Rcpp Armadillo</code> for linear algebra operations</li>
+						</ul>
+					</section>
+
+					<section>
+						<h3 style="text-transform:none;"><code>HTML</code>, <code>CSS</code> and <code>JavaScript</code></h3>
+						<ul>
+							<li style="padding-left:10px;padding-bottom:10px;">Providing an web app written in <code>HTML</code> to explore the model</li>
+							<li style="padding-left:10px;padding-bottom:10px;">To get interactive graphics use <code>JavaScript</code> and <code>D3</code></li>
+							<li style="padding-left:10px;padding-bottom:10px;">Generating necessary data and parsing web app from <code>R</code></li>
+						</ul>
+					</section>
+
+					<section>
+						<h3 style="text-transform:none;">Collecting Everything With <code>R</code></h3>
+						<ul>
+							<li style="padding-left:10px;padding-bottom:10px;">API to train and modify the model as well as static plots</li>
+							<li style="padding-left:10px;padding-bottom:10px;">Export csv files containing parameters  and the risk to parse the web app</li>
+						</ul>
 					</section>
 					
 				</section>
@@ -129,7 +255,217 @@
 					</section>
 
 					<section>
-						<h3 style="text-transform:none;">Header</h3>
+						<h3 style="text-transform:none;">Class System of <code>compboost</code></h3>
+						<ul>
+							<li style="padding-left:10px;padding-bottom:10px;">
+								Example by taking a look at the <code>QuadraticLoss</code> class for:
+								<ul>
+									<li style="padding-left:10px;padding-bottom:10px;"><code>C++</code> class</li>
+									<li style="padding-left:10px;padding-bottom:10px;"><code>C++</code> wrapper class</li>
+									<li style="padding-left:10px;padding-bottom:10px;"><code>R S4</code> class</li>
+								</ul>
+							</li>
+							<li style="padding-left:10px;padding-bottom:10px;">
+								From <code>C++</code> to <code>R</code>. 
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h3 style="text-transform:none;"><code>C++</code> Classes: Abstract <code>Loss</code></h3>
+						<pre style="max-height:600px;"><code class="cpp">
+class Loss
+{
+public:
+  
+  /// Specific loss function
+  virtual arma::vec definedLoss (const arma::vec&, const arma::vec&) const = 0;
+  
+  /// Gradient of loss functions for pseudo residuals
+  virtual arma::vec definedGradient (const arma::vec&, const arma::vec&) const = 0;
+  
+  /// Constant initialization of the empirical risk
+  virtual double constantInitializer (const arma::vec&) const = 0;
+  
+  virtual ~Loss ();
+  
+protected:
+  
+  /// Custom offset:
+  double custom_offset;
+  
+  /// Tag if a custom offset is used
+  bool use_custom_offset = false;
+  
+  /// Weights:
+  arma::vec weights;
+};
+					</code></pre>
+					</section>
+
+					<section>
+						<h3 style="text-transform:none;"><code>C++</code> Classes: Child <code>QuadraticLoss</code></h3>
+						<pre style="max-height:600px;"><code class="cpp">
+class QuadraticLoss : public Loss
+{
+public:
+  
+  /// Default Constructor
+  QuadraticLoss ();
+  
+  /// Constructor to initialize custom offset
+  QuadraticLoss (const double&);
+  
+  /// Specific loss function
+  arma::vec definedLoss (const arma::vec&, const arma::vec&) const;
+  
+  /// Gradient of loss functions for pseudo residuals
+  arma::vec definedGradient (const arma::vec&, const arma::vec&) const;
+  
+  /// Constant initialization of the empirical risk
+  double constantInitializer (const arma::vec&) const;
+};
+					</code></pre>
+					</section>
+
+					<section>
+						<h3 style="text-transform:none;"><code>C++</code> Classes: Child <code>QuadraticLoss</code> Implementation</h3>
+						<pre style="max-height:600px;"><code class="cpp">
+
+QuadraticLoss::QuadraticLoss () { }
+QuadraticLoss::QuadraticLoss (const double& custom_offset0)
+{ 
+  custom_offset = custom_offset0;
+  use_custom_offset = true;
+}
+
+arma::vec QuadraticLoss::definedLoss (const arma::vec& true_value, 
+  const arma::vec& prediction) const
+{
+  return arma::pow(true_value - prediction, 2) / 2;
+}
+
+arma::vec QuadraticLoss::definedGradient (const arma::vec& true_value, 
+  const arma::vec& prediction) const
+{
+  return prediction - true_value;
+}
+
+double QuadraticLoss::constantInitializer (const arma::vec& true_value) const
+{
+  if (use_custom_offset) { return custom_offset; }
+  return arma::mean(true_value);
+}
+					</code></pre>
+					</section>
+
+					<section>
+						<h3 style="text-transform:none;"><code>C++</code> Wrapper Classes</h3>
+						<pre style="max-height:600px;"><code class="cpp">
+class QuadraticLossWrapper : public LossWrapper
+{
+public:
+  QuadraticLossWrapper () { obj = new loss::QuadraticLoss(); }
+  QuadraticLossWrapper (double custom_offset) { obj = new loss::QuadraticLoss(custom_offset); }
+  
+  arma::vec testLoss (arma::vec& true_value, arma::vec& prediction) {
+    return obj->definedLoss(true_value, prediction);
+  }
+  arma::vec testGradient (arma::vec& true_value, arma::vec& prediction) {
+    return obj->definedGradient(true_value, prediction);
+  }
+  double testConstantInitializer (arma::vec& true_value) {
+    return obj->constantInitializer(true_value);
+  }
+};
+					</code></pre>	
+					</section>
+
+
+					<section>
+						<h3 style="text-transform:none;"><code>Rcpp Module</code></h3>
+						<pre style="max-height:600px;"><code class="cpp">
+RCPP_EXPOSED_CLASS(LossWrapper);
+RCPP_MODULE (loss_module)
+{
+  using namespace Rcpp;
+
+  class_< LossWrapper > ("Loss")
+    .constructor ()
+  ;
+
+  class_< QuadraticLossWrapper > ("QuadraticLoss")
+    .derives< LossWrapper > ("Loss")
+    .constructor ()
+    .constructor < double > ()
+    .method("testLoss", &QuadraticLossWrapper::testLoss, 
+	  "Test the defined loss function of the loss")
+    .method("testGradient", &QuadraticLossWrapper::testGradient, 
+	  "Test the defined gradient of the loss")
+    .method("testConstantInitializer", &QuadraticLossWrapper::testConstantInitializer, 
+	  "Test the constant initializer function of the loss")
+  ;
+}
+					</code></pre>	
+					</section>
+
+
+					<section>
+						<h3 style="text-transform:none;"><code>R S4</code> Classes</h3>
+						<pre style="max-height:600px;"><code class="r">
+QuadraticLoss
+## C++ class 'QuadraticLoss' <0000000010de5960>
+## Constructors:
+##     QuadraticLoss()
+##     QuadraticLoss(double)
+## 
+## Fields: No public fields exposed by this class
+## 
+## Methods: 
+##      double testConstantInitializer(arma::Col< double >)  
+##            docstring : Test the constant initializer function of the loss
+##      arma::Col< double > testGradient(arma::Col< double >, arma::Col< double >)  
+##            docstring : Test the defined gradient of the loss
+##      arma::Col< double > testLoss(arma::Col< double >, arma::Col< double >)  
+##            docstring : Test the defined loss function of the loss
+## 
+
+q.loss = QuadraticLoss$new()
+q.loss$testConstantInitializer(1:10)
+## 5.5
+					</code></pre>	
+					</section>
+
+					<section>
+						<h3 style="text-transform:none;">URL Diagram With all Classes</h3>
+						<div class="img-magnifier-container">
+ 							<img id="classdiagram" src="figures/cboost_struct/class_diagram_inverse.png" width="800" height="492">
+ 						</div>
+ 						<script>
+ 							magnify("classdiagram", 2.5);
+ 						</script>
+					</section>
+
+				</section>
+
+				<!-- ----------------------------------------------------------------------------------------------- -->
+				<!--                                                                                                 -->
+				<!--                                      Extending Compboost                                        -->
+				<!--                                                                                                 -->
+				<!-- ----------------------------------------------------------------------------------------------- -->
+
+				<section>
+				
+					<section data-background="figures/background/cboost.png">
+						<h2>Extending <code>compboost</code></h2>
+					</section>  
+
+					<section>
+						<h3 style="text-transform:none;">Using <code>R</code> functions</h3>
+					</section>
+
+					<section>
+						<h3 style="text-transform:none;">Using <code>C++</code> functions</h3>
 					</section>
 
 				</section>
@@ -146,6 +482,187 @@
 						<h2>Small Benchmark:<br><code>compboost</code> vs <code>mboost</code></h2>
 					</section>  
 
+					<section>
+						<h3 style="text-transform:none;">Setup</h3>
+						<ul>
+							<li style="padding-left:10px;padding-bottom:10px;">
+								Each benchmark, runtime and memory, was taken for varying the number of observations,
+								iterations and base-learners by using spline and linear base-learner.
+							</li>
+							<li style="padding-left:10px;padding-bottom:10px;">
+								Benchmark with simulated data:
+								<ol>
+									<li style="padding-left:10px;padding-bottom:10px;">Correlation of features are Beta(1,8) distributed.</li>
+									<li style="padding-left:10px;padding-bottom:10px;">Dataset is is simulated by a multivariate gaussian with the correlations from 1.</li>
+									<li style="padding-left:10px;padding-bottom:10px;">Coefficients are simulated from a U[-2,2] distribution.</li>
+									<li style="padding-left:10px;padding-bottom:10px;">Target variable y is calculated as linear combination of the data and parameter.</li>
+								</ol>
+						</ul>
+					</section>
+
+					<section>
+						<h3 style="text-transform:none;">Runtime Benchmark</h3>
+						<ul>
+							<li style="padding-left:10px;padding-bottom:10px;">Each iteration is repeated five times using the package <code>batchtools</code></li>
+							<li style="padding-left:10px;padding-bottom:10px;">
+								While varying a parameter the other default values are:
+								<ol>
+									<li style="padding-left:10px;padding-bottom:10px;">Number of observations: 2000</li>
+									<li style="padding-left:10px;padding-bottom:10px;">Number of iterations: 1500</li>
+									<li style="padding-left:10px;padding-bottom:10px;">Number of base-learners: 1000</li>
+								</ol>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<div class="img-magnifier-container">
+ 							<img id="classdiagram" src="figures/benchmarks/bm_nrows.png" width="800" height="480">
+ 						</div>
+					</section>
+
+					<section>
+						<div class="img-magnifier-container">
+ 							<img id="classdiagram" src="figures/benchmarks/bm_blearner.png" width="800" height="480">
+ 						</div>
+					</section>
+
+					<section>
+						<h3 style="text-transform:none;">Memory Benchmark</h3>
+						<ul>
+							<li style="padding-left:10px;padding-bottom:10px;">
+								Comparison between <code>compboost</code> and <code>mboost</code> with disabling and 
+								enabling sparse matrices for <code>mboost</code>.
+							</li>
+							<li style="padding-left:10px;padding-bottom:10px;">
+								While varying a parameter the other default values are:
+								<ol>
+									<li style="padding-left:10px;padding-bottom:10px;">Number of observations: 2000</li>
+									<li style="padding-left:10px;padding-bottom:10px;">Number of iterations: 1000</li>
+									<li style="padding-left:10px;padding-bottom:10px;">Number of base-learners: 1000</li>
+								</ol>
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<div class="img-magnifier-container">
+ 							<img src="figures/benchmarks/iters13141516.png" width="800" height="320">
+ 						</div>
+					</section>
+
+				</section>
+
+
+				<!-- ----------------------------------------------------------------------------------------------- -->
+				<!--                                                                                                 -->
+				<!--                                         Next Steps                                              -->
+				<!--                                                                                                 -->
+				<!-- ----------------------------------------------------------------------------------------------- -->
+
+				<section>
+				
+					<section data-background="figures/background/cboost.png">
+						<h2>Next Steps</h2>
+					</section>  
+
+					<section>
+						<h3 style="text-transform:none;"><code>R</code> API</h3>
+						<p>
+							<code>R</code> cannot just be used to run the main algorithm but also to:
+						</p>
+						<ul>
+							<li>Provide an formula API which is common to the most <code>R</code> users.</li>
+							<li>Parallelize the data transformations.</li>
+							<li>Memory handling by deleting unused data sources.</li>
+						</ul>
+					</section>
+
+					<section>
+						<h3 style="text-transform:none;">Optimizing Code</h3>
+						<ul>
+							<li style="padding-left:10px;padding-bottom:10px;">
+								Different ways of possible <b style="color:rgb(255, 248, 220);">parallel computations</b>:
+								<ul>
+									<li style="padding-left:10px;padding-bottom:10px;">Doing parallelizations within <code>R</code> to transform the data parallel instead of sequential.</li>
+									<li style="padding-left:10px;padding-bottom:10px;">Doing parallelizations within <code>C++</code> to find the best base-learner in parallel.</li>
+								</ul>
+							</li>
+							<li style="padding-left:10px;padding-bottom:10px;">
+								Using sparse matrices to <b style="color:rgb(255, 248, 220);">use less memory</b> and <b style="color:rgb(255, 248, 220);">speed up the algorithm</b>.
+							</li>
+						</ul>
+					</section>
+
+					<section>
+						<h3 style="text-transform:none;">Sparse Matrices</h3>
+						<p>
+							Depending on the structure, it is possible to increase performance:
+						</p>
+						<pre style="max-height:600px;"><code class="r">
+dense.spline.train = "
+  arma::mat test1 (arma::mat Z, arma::mat X, arma::mat y) { return Z * X * y; }
+"
+sparse.spline.train = "
+  arma::mat test2 (arma::mat Z, arma::sp_mat X, arma::mat y) 
+  {
+    // Brackets are important due to CSC format:
+    return Z * (X * y);
+  }
+"
+Rcpp::cppFunction(code = dense.spline.train, depends = "RcppArmadillo", rebuild = TRUE)
+Rcpp::cppFunction(code = sparse.spline.train, depends = "RcppArmadillo", rebuild = TRUE)
+
+n = 100000; p = 40;
+Z = matrix(runif(p^2), p, p)
+X = matrix(0, nrow = n, ncol = p)
+X[1:n, sample(1:p, 5)] = rnorm(10000 * 5)
+y = matrix(runif(n), nrow = n, ncol = 1)
+betas = matrix(runif(p), nrow = p, ncol = 1)
+X.sparse = as(X, "sparseMatrix")
+
+# Equivalent to spline train:
+microbenchmark::microbenchmark(
+  "dense spline train"  = test1(Z, t(X), y),
+  "sparse spline train" = test2(Z, t(X.sparse), y)
+)
+## Unit: milliseconds
+##                 expr      min       lq     mean   median       uq      max neval cld
+##   dense spline train 26.72330 28.01085 44.14224 29.70544 32.75517 144.2635   100   b
+##  sparse spline train 10.13785 10.55193 15.07657 10.93836 11.60216 130.8875   100  a
+						</code></pre>	
+					</section>
+					<!--
+						- Sparse matrizen (evtl. Code aus issue zeigen)
+						- parallel (RcppParallel irgendwie komisch, vielleicht nativ in C++)
+					-->
+
+					<section>
+						<h3 style="text-transform:none;">Visualizing <code>compboost</code></h3>
+						<ul>
+							<li style="padding-left:10px;padding-bottom:10px;">Static graphics with standard <code>R</code> plotting systems like <code>base</code> or <code>ggplot2</code></li>
+							<li style="padding-left:10px;padding-bottom:10px;">Interactive Visualization with <code>HTML</code> and <code>JavaScript</code></li>
+						</ul>
+					</section>
+
+					<!-- GIF with the fancy d3 animation -->
+
+					<section>
+						<div>
+ 							<img src="figures/visualization/compboost_app.gif" width="970" height="449">
+ 						</div>
+					</section>
+
+					<section>
+						<h3 style="text-transform:none;">Greater Functionality</h3>
+						<ul>
+							<li style="padding-left:10px;padding-bottom:10px;">More supported base-learner.</li>
+							<li style="padding-left:10px;padding-bottom:10px;">Greater number of supported loss functions.</li>
+							<li style="padding-left:10px;padding-bottom:10px;">Additional optimizer.</li>
+							<li style="padding-left:10px;padding-bottom:10px;">Possibility to combine base-learner to more complex ones.</li>
+						</ul>
+					</section>
+
 				</section>
 
 
@@ -159,41 +676,8 @@
 				
 					<section data-background="figures/background/cboost.png">
 						<h3>Thanks for your attention</h3>
-						<ul>
-							<li>Slides created with <a href="https://revealjs.com/#/">reveal.js</a></li>
-							<li></li>
-						</ul>
 					</section>
 
-				</section>
-
-
-
-
-
-				<section>
-					<h2>Pretty Code</h2>
-					<pre><code class="r">
-bm.file.good = read.table(
-  file = "R/mem_benchmark/memory_track/bm_mem_iters5.txt",
-  header = TRUE,
-  sep = ";"
-)
-bm.file.good$used.memory.centered = bm.file.good$used.memory - bm.file.good$used.memory[1]
-bm.file.good$second = bm.file.good$second / 60
-
-bm.file.bad = read.table(
-  file = "R/mem_benchmark/memory_track/bm_mem_iters6.txt",
-  header = TRUE,
-  sep = ";"
-)
-bm.file.bad$used.memory.centered = bm.file.bad$used.memory - bm.file.bad$used.memory[1]
-bm.file.bad$second = bm.file.bad$second / 60
-
-bm.compboost = bm.file.good[3:79, ]
-bm.mboost    = bm.file.good[79:792, ]
-					</code></pre>
-					<p>Code syntax highlighting courtesy of <a href="http://softwaremaniacs.org/soft/highlight/en/description/">highlight.js</a>.</p>
 				</section>
 
 
@@ -215,8 +699,16 @@ bm.mboost    = bm.file.good[79:792, ]
 				center: true,
 				// Parallax background image
 				parallaxBackgroundImage: "figures/background/parallax_section.jpg",
+				parallaxBackgroundHorizontal: 0,
+				parallaxBackgroundVertical: 0,
 
 				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// The "normal" size of the presentation, aspect ratio will be preserved
+				// when the presentation is scaled to fit different resolutions. Can be
+				// specified using percentage units.
+				width: 960,
+				height: 702,
 
 				// More info https://github.com/hakimel/reveal.js#dependencies
 				dependencies: [
